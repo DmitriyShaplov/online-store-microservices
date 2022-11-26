@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app-deployment
+  labels:
+    app: user-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-app
+  template:
+    metadata:
+      labels:
+        app: user-app
+    spec:
+      containers:
+        - name: user-app
+          image: shaplovdv/userapp:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: user-db-secret
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-db-secret
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: user-app-config
+          livenessProbe:
+            httpGet:
+              port: 8000
+              path: /actuator/health
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              port: 8000
+              path: /user/ids
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 2
