@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset eganovsa:MPC-172-init-assets logicalFilePath:/
+--changeset shaplovdv:init-users logicalFilePath:/
 create table if not exists users (
     id bigserial primary key ,
     username varchar(256),
