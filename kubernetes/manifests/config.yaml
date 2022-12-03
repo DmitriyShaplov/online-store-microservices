@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: user-app-config
 data:
-  SERVER_PORT: 8000
+  SERVER_PORT: "8000"
   SPRING_DATASOURCE_URL: "jdbc:postgresql://release-1-postgresql.default.svc.cluster.local:5432/postgres"

@@ -1,10 +1,6 @@
 FROM openjdk:17-jdk-alpine AS build
-WORKDIR /workspace/app
-RUN apk update && apk add git
-RUN git clone https://github.com/DmitriyShaplov/kuber_users_crud.git
-WORKDIR kuber_users_crud
-RUN git checkout master
-RUN chmod +x gradlew && ./gradlew clean build
+WORKDIR /workspace/app/kuber_users_crud
+ADD build/libs/ build/libs/
 RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/kuber_users_crud.jar)
 
 FROM openjdk:17-jdk-alpine

@@ -14,6 +14,15 @@ spec:
       labels:
         app: user-app
     spec:
+      serviceAccountName: sa-migration
+      # The init containers
+      initContainers:
+        - name: wait-for-onezone
+          image: ghcr.io/groundnuty/k8s-wait-for:v1.6
+          imagePullPolicy: Always
+          args:
+            - "job"
+            - "user-app-job"
       containers:
         - name: user-app
           image: shaplovdv/userapp:latest
@@ -35,17 +44,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: user-app-config
-          livenessProbe:
-            httpGet:
-              port: 8000
-              path: /actuator/health
-            initialDelaySeconds: 30
-            periodSeconds: 5
-            timeoutSeconds: 2
-          readinessProbe:
-            httpGet:
-              port: 8000
-              path: /user/ids
-            initialDelaySeconds: 30
-            periodSeconds: 5
-            timeoutSeconds: 2
+#          livenessProbe:
+#            httpGet:
+#              port: 8000
+#              path: /actuator/health
+#            initialDelaySeconds: 30
+#            periodSeconds: 5
+#            timeoutSeconds: 2
+#          readinessProbe:
+#            httpGet:
+#              port: 8000
+#              path: /user/ids
+#            initialDelaySeconds: 30
+#            periodSeconds: 5
+#            timeoutSeconds: 2

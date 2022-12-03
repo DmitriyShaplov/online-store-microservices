@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: user-app-job
+  labels:
+    app: user-job
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: user-job
+    spec:
+      containers:
+        - name: user-job
+          image: shaplovdv/userjob
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: URL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-app-config
+                  key: SPRING_DATASOURCE_URL
+                  optional: false
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: user-db-secret
+                  key: postgres-username
+                  optional: false
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-db-secret
+                  key: postgres-password
+                  optional: false
+      restartPolicy: Never
