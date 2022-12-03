@@ -37,8 +37,8 @@ public class UserController {
         userService.update(user);
     }
 
-    @GetMapping("/ids")
-    public List<Long> findAllIds() {
-        return userService.findAllIds();
+    @GetMapping("/list")
+    public List<User> findAll() {
+        return userService.findAll();
     }
 }

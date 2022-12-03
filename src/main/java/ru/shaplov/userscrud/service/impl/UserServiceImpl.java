@@ -1,6 +1,7 @@
 package ru.shaplov.userscrud.service.impl;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +60,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Long> findAllIds() {
-        return userRepository.findAllIds();
+    public List<User> findAll() {
+        List<UserEntity> userEntityList = userRepository.findAll();
+        return modelMapper.map(userEntityList, new TypeToken<List<User>>() {
+        }.getType());
     }
 }
