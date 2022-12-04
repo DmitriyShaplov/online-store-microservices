@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "user-chart.fullname" . }}
+  labels:
+   {{- include "user-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "user-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "user-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "user-chart.serviceAccountName" . }}
+      # The init containers
+      initContainers:
+        - name: {{ .Chart.Name }}-init
+          image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
+          imagePullPolicy: {{ .Values.initImage.pullPolicy }}
+          args:
+            - "job"
+            - {{ include "user-chart.fullname" . | quote }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          ports:
+            - containerPort: {{ .Values.port }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: {{ include "user-chart.fullname" . }}
+#          livenessProbe:
+#            httpGet:
+#              port: 8000
+#              path: /actuator/health
+#            initialDelaySeconds: 30
+#            periodSeconds: 5
+#            timeoutSeconds: 2
+#          readinessProbe:
+#            httpGet:
+#              port: 8000
+#              path: /user/ids
+#            initialDelaySeconds: 30
+#            periodSeconds: 5
+#            timeoutSeconds: 2

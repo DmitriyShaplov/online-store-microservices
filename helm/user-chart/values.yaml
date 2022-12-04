@@ -1,0 +1,46 @@
+# Default values for user-chart.
+replicaCount: 3
+
+image:
+  repository: shaplovdv/userapp
+  pullPolicy: Always
+  tag: "0.3.0"
+
+initImage:
+  repository: ghcr.io/groundnuty/k8s-wait-for
+  pullPolicy: Always
+  tag: v1.6
+
+jobImage:
+  repository: shaplovdv/userjob
+  pullPolicy: Always
+  tag: "latest"
+
+postgresql:
+  enabled: true
+  username: postgres
+  auth:
+    postgresPassword: mysecretpassword
+
+port: "8000"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: "sa-migration"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /(.*)
+          pathType: Prefix
