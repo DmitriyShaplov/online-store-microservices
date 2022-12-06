@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "user-chart.fullname" . }}
+  name: {{ include "user-chart.fullname" . }}-deployment
   labels:
    {{- include "user-chart.labels" . | nindent 4 }}
 spec:
@@ -22,7 +22,7 @@ spec:
           imagePullPolicy: {{ .Values.initImage.pullPolicy }}
           args:
             - "job"
-            - {{ include "user-chart.fullname" . | quote }}
+            - "{{ include "user-chart.fullname" . }}-job"
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -44,17 +44,19 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "user-chart.fullname" . }}
-#          livenessProbe:
-#            httpGet:
-#              port: 8000
-#              path: /actuator/health
-#            initialDelaySeconds: 30
-#            periodSeconds: 5
-#            timeoutSeconds: 2
-#          readinessProbe:
-#            httpGet:
-#              port: 8000
-#              path: /user/ids
-#            initialDelaySeconds: 30
-#            periodSeconds: 5
-#            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              port: 8000
+              path: /actuator/health
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              port: 8000
+              path: /user/list
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 3
+            failureThreshold: 5

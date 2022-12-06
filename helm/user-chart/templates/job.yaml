@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "user-chart.fullname" . }}
+  name: {{ include "user-chart.fullname" . }}-job
   labels:
     {{- include "user-chart.labels" . | nindent 4 }}
 spec:
@@ -34,4 +34,4 @@ spec:
                   name: {{ include "user-chart.fullname" . }}
                   key: postgres-password
                   optional: false
-      restartPolicy: Never
+      restartPolicy: OnFailure
