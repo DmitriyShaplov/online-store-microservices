@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "user-chart.labels" . | nindent 4 }}
 spec:
-  backoffLimit: 1
+  backoffLimit: 6
   template:
     metadata:
       labels:

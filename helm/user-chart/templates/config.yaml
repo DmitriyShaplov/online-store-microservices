@@ -4,7 +4,7 @@ metadata:
   name: {{ include "user-chart.fullname" . }}
 data:
   SERVER_PORT: {{ .Values.port | quote }}
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.default.svc.cluster.local:5432/postgres"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres"
 ---
 apiVersion: v1
 kind: Secret

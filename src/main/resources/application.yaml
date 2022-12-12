@@ -1,0 +1,19 @@
+management:
+  metrics:
+    distribution:
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99, 1.00
+      percentiles-histogram:
+        'http.server.requests': true
+
+
+  endpoints:
+    web:
+      exposure:
+        include: "info,health,prometheus,refresh"
+  info:
+    git:
+      mode: full
+  endpoint:
+    health:
+      show-details: always
