@@ -4,7 +4,15 @@ metadata:
   name: {{ include "user-chart.fullname" . }}
 data:
   SERVER_PORT: {{ .Values.port | quote }}
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=profiles"
+  CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.authService.port }}"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "user-chart.fullname" . }}-job
+data:
+  DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres"
 ---
 apiVersion: v1
 kind: Secret
@@ -14,3 +22,12 @@ type: Opaque
 data:
   postgres-username: {{ .Values.postgresql.username | b64enc | quote }}
   postgres-password: {{ .Values.postgresql.auth.postgresPassword | b64enc | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "user-chart.fullname" . }}-auth"
+data:
+  SERVER_PORT: {{ .Values.portAuth | quote }}
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=auth"
+  CLIENTS_PROFILE_URL: "http://{{ include "user-chart.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}"

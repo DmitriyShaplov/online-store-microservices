@@ -1,11 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.0'
+    id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
+//    id "org.openapi.generator" version "6.2.1"
 }
 
 group = 'ru.shaplov'
-version = '0.0.1-SNAPSHOT'
+version = '1.2'
 sourceCompatibility = '17'
 
 configurations {
@@ -15,6 +16,7 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -23,6 +25,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.0.2'
+
+//    //need for EdDSA crypto
+//    implementation 'com.google.crypto.tink:tink:1.7.0'
+
     implementation 'org.modelmapper:modelmapper:3.1.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
@@ -36,6 +47,19 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-bootJar {
-    archiveFileName = "${project.name}.jar"
-}
+//были проблемы из-за того что не совпала версия спринга на генераторе
+//openApiGenerate {
+//    generatorName = "java"
+//    inputSpec = "$rootDir/specs/profile.yaml".toString()
+//    outputDir = "$buildDir/generated".toString()
+//    apiPackage = "ru.shaplov.clients.api"
+//    invokerPackage = "ru.shaplov.clients.invoker"
+//    modelPackage = "ru.shaplov.clients.model"
+//    id = "profile-registration-client"
+//    group = "ru.shaplov.clients"
+//    version = "1.0.1"
+//    library = "resttemplate"
+//    configOptions = [
+//            dateLibrary: "java8",
+//    ]
+//}

@@ -1,0 +1,741 @@
+{
+	"info": {
+		"_postman_id": "6e89d247-c78c-4bce-8cb2-4e12b716400a",
+		"name": "OTUS Auth-Profile interaction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register user1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function generateRandomString(length) {",
+							"    let result = \"\";",
+							"    let characters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\";",
+							"    let charactersLength = characters.length;",
+							"    for (let i = 0; i < length; i++) {",
+							"        result += characters.charAt(Math.floor(Math.random() * charactersLength));",
+							"    }",
+							"    return result;",
+							"}",
+							"function randomNumericString(length) {",
+							"  var result = \"\";",
+							"  for (var i = 0; i < length; i++) {",
+							"    result += Math.floor(Math.random() * 10);",
+							"  }",
+							"  return result;",
+							"}",
+							"",
+							"pm.variables.set(\"randomNumber\", randomNumericString(10));",
+							"pm.environment.set(\"user1Login\", generateRandomString(8));",
+							"pm.environment.set(\"user1Username\", generateRandomString(8));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User 1 registered\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"id\");  ",
+							"});",
+							"pm.environment.set(\"profile_id\", pm.response.json().id);",
+							"pm.environment.set(\"username1\", pm.response.json().username);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"login\": \"{{user1Login}}\",\n  \"password\": \"secretpassword\",\n  \"profile\": {\n    \"username\": \"{{user1Username}}\",\n    \"firstName\": \"firstName1\",\n    \"lastName\": \"lastName1\",\n    \"email\": \"testmail1@mail.ru\",\n    \"phone\": \"+{{randomNumber}}\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/register",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user1 (not logged in)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User have to be not logged in\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user1 (not logged in)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User have to be not logged in\", function() {",
+							"    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VyTG9naW4xIiwiZXhwIjoxNjczMTkwNDY4LCJwcm9maWxlX2lkIjoyNH0.O8RJACSWDZHsWSOgz2FJGFNVSw_e0oxV7sEL3shK1HH0WEyZhiF0cT7hLoplMOcPCnYjBPY08sjU5Gityw6Sng",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"username1\",\n    \"firstName\": \"firstNameChanged1\",\n    \"lastName\": \"lastNameChanged1\",\n    \"email\": \"testmail1@mail.ru\",\n    \"phone\": \"+{{randomNumber}}\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.variables.get(\"user1Login\"));",
+							"pm.test(\"User 1 logged in\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"{{user1Login}}\",\n    \"password\": \"secretpassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/login",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user1 (logged in)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User data OK\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    pm.expect(pm.response.json().email).to.equal(\"testmail1@mail.ru\");",
+							"    pm.expect(pm.response.json().firstName).to.equal(\"firstName1\");",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VyTG9naW4xIiwiZXhwIjoxNjczMTkwNDY4LCJwcm9maWxlX2lkIjoyNH0.O8RJACSWDZHsWSOgz2FJGFNVSw_e0oxV7sEL3shK1HH0WEyZhiF0cT7hLoplMOcPCnYjBPY08sjU5Gityw6Sng",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user1 (logged in)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User updated\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VyTG9naW4xIiwiZXhwIjoxNjczMTkwNDY4LCJwcm9maWxlX2lkIjoyNH0.O8RJACSWDZHsWSOgz2FJGFNVSw_e0oxV7sEL3shK1HH0WEyZhiF0cT7hLoplMOcPCnYjBPY08sjU5Gityw6Sng",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username1}}\",\n    \"firstName\": \"firstNameChanged1\",\n    \"lastName\": \"lastNameChanged1\",\n    \"email\": \"testmail1@mail.ru\",\n    \"phone\": \"+{{randomNumber}}\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user1 (updated)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"profile_id\", pm.response.json().id);",
+							"pm.test(\"User data OK\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    pm.expect(pm.response.json().email).to.equal(\"testmail1@mail.ru\");",
+							"    pm.expect(pm.response.json().firstName).to.equal(\"firstNameChanged1\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VyTG9naW4xIiwiZXhwIjoxNjczMTkwNDY4LCJwcm9maWxlX2lkIjoyNH0.O8RJACSWDZHsWSOgz2FJGFNVSw_e0oxV7sEL3shK1HH0WEyZhiF0cT7hLoplMOcPCnYjBPY08sjU5Gityw6Sng",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User 1 logout\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/logout",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register user2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function generateRandomString(length) {",
+							"    let result = \"\";",
+							"    let characters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789\";",
+							"    let charactersLength = characters.length;",
+							"    for (let i = 0; i < length; i++) {",
+							"        result += characters.charAt(Math.floor(Math.random() * charactersLength));",
+							"    }",
+							"    return result;",
+							"}",
+							"function randomNumericString(length) {",
+							"  var result = \"\";",
+							"  for (var i = 0; i < length; i++) {",
+							"    result += Math.floor(Math.random() * 10);",
+							"  }",
+							"  return result;",
+							"}",
+							"",
+							"pm.variables.set(\"randomNumber\", randomNumericString(10));",
+							"pm.environment.set(\"user2Login\", generateRandomString(8));",
+							"pm.environment.set(\"user2Username\", generateRandomString(8));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User 2 registered\", function() {",
+							"    pm.response.to.have.status(200);",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"id\");    ",
+							"});",
+							"pm.environment.set(\"profile2_id\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"login\": \"{{user2Login}}\",\n  \"password\": \"secretpassword\",\n  \"profile\": {\n    \"username\": \"{{user2Username}}\",\n    \"firstName\": \"firstName2\",\n    \"lastName\": \"lastName2\",\n    \"email\": \"testmail2@mail.ru\",\n    \"phone\": \"+{{randomNumber}}\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/register",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User 2 logged in\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Host",
+						"value": "{{host}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"{{user2Login}}\",\n    \"password\": \"secretpassword\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/login",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user1 (not authorized)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User not authorized\", function() {",
+							"    pm.response.to.have.status(403);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user1 (not authorized)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"User not authorized\", function() {",
+							"    pm.response.to.have.status(403);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VyTG9naW4xIiwiZXhwIjoxNjczMTkwNDY4LCJwcm9maWxlX2lkIjoyNH0.O8RJACSWDZHsWSOgz2FJGFNVSw_e0oxV7sEL3shK1HH0WEyZhiF0cT7hLoplMOcPCnYjBPY08sjU5Gityw6Sng",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Host",
+						"value": "arch.homework",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username1}}\",\n    \"firstName\": \"firstNameChanged1\",\n    \"lastName\": \"lastNameChanged1\",\n    \"email\": \"testmail1@mail.ru\",\n    \"phone\": \"+{{randomNumber}}\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/profile/{{profile_id}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile",
+						"{{profile_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,5 +1,32 @@
 {{- $fullName := include "user-chart.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-auth
+  {{- with .Values.ingressAuth.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingressAuth.className }}
+  rules:
+    {{- range .Values.ingressAuth.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        {{- range .paths }}
+        paths:
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $fullName }}{{ .serviceSuffix }}
+                port:
+                  number: {{ .svcPort }}
+        {{- end }}
+    {{- end }}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -8,6 +35,7 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+    nginx.ingress.kubernetes.io/auth-url: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.authService.port }}/auth"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
@@ -20,8 +48,9 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $fullName }}
+                name: {{ $fullName }}{{ .serviceSuffix }}
                 port:
-                  number: {{ $svcPort }}
+                  number: {{ .svcPort }}
         {{- end }}
     {{- end }}
+---

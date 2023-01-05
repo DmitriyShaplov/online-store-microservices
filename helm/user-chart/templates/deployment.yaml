@@ -22,7 +22,7 @@ spec:
           imagePullPolicy: {{ .Values.initImage.pullPolicy }}
           args:
             - "job"
-            - "{{ include "user-chart.fullname" . }}-job"
+            - "{{ include "user-chart.fullname" . }}-job-{{ .Values.jobImage.tag }}"
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -53,10 +53,58 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 3
             failureThreshold: 10
-          readinessProbe:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "user-chart.fullname" . }}-deployment-auth
+  labels:
+   {{- include "user-chart.labels" . | nindent 4 }}-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "user-chart.selectorLabels" . | nindent 6 }}-auth
+  template:
+    metadata:
+      labels:
+        {{- include "user-chart.selectorLabels" . | nindent 8 }}-auth
+    spec:
+      serviceAccountName: {{ include "user-chart.serviceAccountName" . }}
+      # The init containers
+      initContainers:
+        - name: {{ .Chart.Name }}-init-auth
+          image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
+          imagePullPolicy: {{ .Values.initImage.pullPolicy }}
+          args:
+            - "job"
+            - "{{ include "user-chart.fullname" . }}-job-{{ .Values.jobImage.tag }}"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.imageAuth.repository }}:{{ .Values.imageAuth.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.portAuth }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: "{{ include "user-chart.fullname" . }}-auth"
+          livenessProbe:
             httpGet:
-              port: 8000
-              path: /user/list
+              port: 8001
+              path: /actuator/health
             initialDelaySeconds: 100
             periodSeconds: 15
             timeoutSeconds: 3

@@ -1,3 +1,10 @@
+server:
+  port: 8081
+
+clients:
+  profile:
+    url: http://localhost:8080
+
 management:
   metrics:
     distribution:
@@ -18,27 +25,13 @@ management:
       show-details: always
 
 spring:
-#  jpa:
-#    properties:
-#      hibernate:
-#        default_schema: profile
+  #  jpa:
+  #    properties:
+  #      hibernate:
+  #        default_schema: auth
   datasource:
-    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=profiles"
+    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=auth"
     username: postgres
     password: mysecretpassword
 #    hikari:
-#      schema: profile
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${clients.auth.url}/jwks
-
-clients:
-  auth:
-    url: http://localhost:8081
-
-logging:
-  level:
-    'org.springframework.web.filter.CommonsRequestLoggingFilter': DEBUG
+#      schema: auth

@@ -2,19 +2,24 @@
 replicaCount: 2
 
 image:
-  repository: shaplovdv/userapp
-  pullPolicy: Always
-  tag: "0.5.0"
+  repository: shaplovdv/userprofile
+  pullPolicy: IfNotPresent
+  tag: "1.1"
+
+imageAuth:
+  repository: shaplovdv/userauth
+  pullPolicy: IfNotPresent
+  tag: "1.7"
 
 initImage:
   repository: ghcr.io/groundnuty/k8s-wait-for
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   tag: v1.6
 
 jobImage:
   repository: shaplovdv/userjob
-  pullPolicy: Always
-  tag: "latest"
+  pullPolicy: IfNotPresent
+  tag: "3.3"
 
 postgresql:
   enabled: true
@@ -32,6 +37,7 @@ postgresql:
         database: postgres
 
 port: "8000"
+portAuth: "8001"
 
 nameOverride: ""
 fullnameOverride: ""
@@ -43,16 +49,37 @@ serviceAccount:
 service:
   type: NodePort
   port: 80
+authService:
+  type: NodePort
+  port: 81
 
 ingress:
   className: nginx
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/auth-response-headers: Authorization
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location ~* "^/internal.*" {
+          deny all;
+          return 403;
+        }
   hosts:
     - host: arch.homework
       paths:
         - path: /(.*)
           pathType: Prefix
+          serviceSuffix: ""
+          svcPort: 80
+
+ingressAuth:
+  className: nginx
+  hosts:
+    - host: arch.homework
+      paths:
+        - path: /(register|login|logout)
+          pathType: Prefix
+          serviceSuffix: "-auth"
+          svcPort: 81
 
 metrics:
   serviceMonitor:
