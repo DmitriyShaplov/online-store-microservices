@@ -1,0 +1,44 @@
+management:
+  metrics:
+    distribution:
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99, 1.00
+      percentiles-histogram:
+        'http.server.requests': true
+
+  endpoints:
+    web:
+      exposure:
+        include: "info,health,prometheus,refresh"
+  info:
+    git:
+      mode: full
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=app_orders"
+    username: postgres
+    password: mysecretpassword
+
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${clients.auth.url}/jwks
+  liquibase:
+    database-change-log-lock-table: ORDERS_DATABASECHANGELOG_LOCK
+    database-change-log-table: ORDERS_DATABASECHANGELOG
+    default-schema: public
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+clients:
+  auth:
+    url: http://localhost:8081
+
+logging:
+  level:
+    'org.springframework.web.filter.CommonsRequestLoggingFilter': DEBUG

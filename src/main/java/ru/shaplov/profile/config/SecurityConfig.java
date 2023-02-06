@@ -1,10 +1,5 @@
 package ru.shaplov.profile.config;
 
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.KeySourceException;
-import com.nimbusds.jose.jwk.*;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.JWSAlgorithmFamilyJWSKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
