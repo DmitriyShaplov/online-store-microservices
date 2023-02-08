@@ -1,1 +1,4 @@
-rootProject.name = 'kuber_users_crud'
+include 'commons'
+include 'services:order-service'
+include 'services:profile-service'
+include 'services:auth-service'

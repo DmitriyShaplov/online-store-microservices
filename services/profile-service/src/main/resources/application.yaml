@@ -1,0 +1,44 @@
+management:
+  metrics:
+    distribution:
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99, 1.00
+      percentiles-histogram:
+        'http.server.requests': true
+
+  endpoints:
+    web:
+      exposure:
+        include: "info,health,prometheus,refresh"
+  info:
+    git:
+      mode: full
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+#  jpa:
+#    properties:
+#      hibernate:
+#        default_schema: profile
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=profiles"
+    username: postgres
+    password: mysecretpassword
+#    hikari:
+#      schema: profile
+
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          jwk-set-uri: ${clients.auth.url}/jwks
+jwt-test.signing-key: S2V5LU11c3QtQmUtYXQtbGVhc3QtMzItYnl0ZXMtaW4tbGVuZ3RoIQ==
+clients:
+  auth:
+    url: http://localhost:8081
+
+logging:
+  level:
+    'org.springframework.web.filter.CommonsRequestLoggingFilter': DEBUG

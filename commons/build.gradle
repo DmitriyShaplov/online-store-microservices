@@ -1,11 +1,11 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.0.2'
+    id 'java-library'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'maven-publish'
 }
 
 group = 'ru.shaplov'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '17'
 
 configurations {
@@ -18,15 +18,37 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.0.2"
+    }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api 'org.springframework.boot:spring-boot-starter-actuator'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'org.springframework.boot:spring-boot-starter-security'
+    api 'org.springframework.security:spring-security-oauth2-resource-server'
+    api 'org.springframework.security:spring-security-oauth2-jose'
+    api 'org.modelmapper:modelmapper:3.1.0'
+    api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    api 'org.springdoc:springdoc-openapi-starter-common:2.0.2'
+    api 'io.micrometer:micrometer-tracing-bridge-brave'
+//    //need for EdDSA crypto
+//    implementation 'com.google.crypto.tink:tink:1.7.0'
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    compileOnly 'org.projectlombok:lombok'
+    api 'io.micrometer:micrometer-registry-prometheus'
+    api 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.springframework.security:spring-security-test'
+    testCompileOnly 'com.h2database:h2'
+}
+
+java {
+    withSourcesJar()
 }
