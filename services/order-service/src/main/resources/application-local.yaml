@@ -1,16 +1,1 @@
 jwt-test.signing-key: S2V5LU11c3QtQmUtYXQtbGVhc3QtMzItYnl0ZXMtaW4tbGVuZ3RoIQ==
-spring:
-  jpa:
-    open-in-view: true
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        format_sql: true
-        highlight_sql: true
-        generate_statistics: true
-logging:
-  level:
-    root: debug
-    'org.hibernate.type.descriptor.sql.BasicBinder': trace
-    'org.hibernate.SQL': debug

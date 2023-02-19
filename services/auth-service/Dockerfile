@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-alpine AS build
 WORKDIR /workspace/app/userauth
 ADD build/libs build/libs/
-RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/auth-service-1.7.jar)
+RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/auth-service-1.8.jar)
 
 FROM openjdk:17-jdk-alpine
 ARG DEPENDENCY=/workspace/app/userauth/build/dependency

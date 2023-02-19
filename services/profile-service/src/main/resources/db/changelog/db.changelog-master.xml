@@ -5,7 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="sql/init-users-scheme.sql" relativeToChangelogFile="true"/>
-    <include file="sql/auth-schema.sql" relativeToChangelogFile="true"/>
+    <include file="sql/profile-schema.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

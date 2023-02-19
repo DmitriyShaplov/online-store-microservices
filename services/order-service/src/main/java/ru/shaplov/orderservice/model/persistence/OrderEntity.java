@@ -29,7 +29,7 @@ public class OrderEntity {
     @Version
     private int version;
 
-    @Column(name = "profile_id")
+    @Column(name = "profile_id", updatable = false)
     private Long profileId;
 
     @Column(name = "create_date", updatable = false)

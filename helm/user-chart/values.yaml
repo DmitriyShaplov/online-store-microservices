@@ -1,25 +1,19 @@
 # Default values for user-chart.
 replicaCount: 2
 
-image:
-  repository: shaplovdv/userprofile
-  pullPolicy: IfNotPresent
-  tag: "1.1"
-
-imageAuth:
-  repository: shaplovdv/userauth
-  pullPolicy: IfNotPresent
-  tag: "1.7"
-
-initImage:
-  repository: ghcr.io/groundnuty/k8s-wait-for
-  pullPolicy: IfNotPresent
-  tag: v1.6
-
-jobImage:
-  repository: shaplovdv/userjob
-  pullPolicy: IfNotPresent
-  tag: "3.3"
+images:
+  profiles:
+    repository: shaplovdv/profile-service
+    pullPolicy: IfNotPresent
+    tag: "1.3"
+  auth:
+    repository: shaplovdv/auth-service
+    pullPolicy: IfNotPresent
+    tag: "1.8"
+  orders:
+    repository: shaplovdv/order-service
+    pullPolicy: IfNotPresent
+    tag: "1.0"
 
 postgresql:
   enabled: true
@@ -36,22 +30,24 @@ postgresql:
       auth:
         database: postgres
 
-port: "8000"
-portAuth: "8001"
+port:
+  profiles: "8000"
+  auth: "8001"
+  orders: "8002"
 
 nameOverride: ""
 fullnameOverride: ""
 
-serviceAccount:
-  create: true
-  name: "sa-migration"
-
-service:
-  type: NodePort
-  port: 80
-authService:
-  type: NodePort
-  port: 81
+services:
+  profiles:
+    type: NodePort
+    port: 80
+  auth:
+    type: NodePort
+    port: 81
+  orders:
+    type: NodePort
+    port: 82
 
 ingress:
   className: nginx
@@ -68,8 +64,12 @@ ingress:
       paths:
         - path: /(.*)
           pathType: Prefix
-          serviceSuffix: ""
+          serviceSuffix: "-profiles"
           svcPort: 80
+        - path: /(.*)
+          pathType: Prefix
+          serviceSuffix: "-orders"
+          svcPort: 82
 
 ingressAuth:
   className: nginx

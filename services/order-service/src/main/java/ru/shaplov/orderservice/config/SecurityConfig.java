@@ -5,11 +5,13 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,7 +19,9 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.shaplov.orderservice.repository.OrderRepository;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,6 +33,9 @@ import java.util.Base64;
 @EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,7 +49,12 @@ public class SecurityConfig {
                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**")
                 .permitAll()
                 .requestMatchers("/internal/**").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/orders/{id}")
+                .access(((authentication, request) ->
+                        new AuthorizationDecision(orderRepository.existsByIdAndProfileId(
+                                Long.parseLong(request.getVariables().get("id")),
+                                ((JwtAuthenticationToken) authentication).getToken().getClaim("profile_id")))))
+                .anyRequest().hasAnyAuthority("SCOPE_orders")
                 .and()
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();

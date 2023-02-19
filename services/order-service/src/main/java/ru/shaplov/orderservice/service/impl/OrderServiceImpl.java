@@ -1,11 +1,8 @@
 package ru.shaplov.orderservice.service.impl;
 
-import jakarta.persistence.EntityManager;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 import ru.shaplov.common.model.exception.ResponseCodeException;
 import ru.shaplov.orderservice.model.Order;
 import ru.shaplov.orderservice.model.OrderStatus;
@@ -36,10 +33,6 @@ public class OrderServiceImpl implements OrderService {
         return persistentService.find(id);
     }
 
-    @Autowired
-    EntityManager em;
-    @Autowired
-    TransactionTemplate transactionTemplate;
 
     @Override
     public Order create(Order order) {

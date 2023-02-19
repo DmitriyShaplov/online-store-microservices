@@ -26,12 +26,21 @@ spring:
     username: postgres
     password: mysecretpassword
 
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        generate_statistics: true
 
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          jwk-set-uri: ${clients.auth.url}/jwks
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${clients.auth.url}/jwks
   liquibase:
     database-change-log-lock-table: ORDERS_DATABASECHANGELOG_LOCK
     database-change-log-table: ORDERS_DATABASECHANGELOG
@@ -44,4 +53,7 @@ clients:
 
 logging:
   level:
+    root: info
     'org.springframework.web.filter.CommonsRequestLoggingFilter': DEBUG
+    'org.hibernate.type.descriptor.sql.BasicBinder': trace
+    'org.hibernate.SQL': debug

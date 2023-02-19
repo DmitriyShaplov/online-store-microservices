@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'ru.shaplov'
-version = '1.7'
+version = '1.8'
 sourceCompatibility = '17'
 
 configurations {
@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'org.springframework.security:spring-security-jwt:1.1.1.RELEASE'
     implementation 'com.github.ben-manes.caffeine:caffeine'
+    implementation 'org.liquibase:liquibase-core'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

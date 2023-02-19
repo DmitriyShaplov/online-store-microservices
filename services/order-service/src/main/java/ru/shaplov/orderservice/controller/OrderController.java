@@ -1,5 +1,7 @@
 package ru.shaplov.orderservice.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import ru.shaplov.orderservice.model.Order;
 import ru.shaplov.orderservice.model.PaymentMethod;
@@ -23,7 +25,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order create(@RequestBody Order order) {
+    public Order create(@RequestBody Order order, @AuthenticationPrincipal Jwt jwt) {
+        order.setProfileId(jwt.getClaim("profile_id"));
         return orderService.create(order);
     }
 

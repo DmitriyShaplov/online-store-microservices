@@ -26,15 +26,17 @@ spring:
     url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=profiles"
     username: postgres
     password: mysecretpassword
-#    hikari:
-#      schema: profile
+  liquibase:
+    database-change-log-lock-table: PROFILES_DATABASECHANGELOG_LOCK
+    database-change-log-table: PROFILES_DATABASECHANGELOG
+    default-schema: public
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${clients.auth.url}/jwks
 
-#  security:
-#    oauth2:
-#      resourceserver:
-#        jwt:
-#          jwk-set-uri: ${clients.auth.url}/jwks
-jwt-test.signing-key: S2V5LU11c3QtQmUtYXQtbGVhc3QtMzItYnl0ZXMtaW4tbGVuZ3RoIQ==
 clients:
   auth:
     url: http://localhost:8081

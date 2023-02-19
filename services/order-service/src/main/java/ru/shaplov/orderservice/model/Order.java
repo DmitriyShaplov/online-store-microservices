@@ -22,6 +22,7 @@ public class Order {
     @JsonIgnore
     private Integer version;
 
+    @JsonIgnore
     private Long profileId;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

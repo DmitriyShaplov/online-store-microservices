@@ -1,15 +1,7 @@
 --liquibase formatted sql
 
 --changeset shaplovdv:auth-schema logicalFilePath:/
-create schema profiles;
 create schema auth;
-
-alter table public.users
-    rename to profiles;
-alter table public.profiles
-    set schema profiles;
-
-create unique index profiles_username_uidx on profiles.profiles(username);
 
 create table auth.users
 (

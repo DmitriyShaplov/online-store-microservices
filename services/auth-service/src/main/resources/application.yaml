@@ -25,13 +25,12 @@ management:
       show-details: always
 
 spring:
-  #  jpa:
-  #    properties:
-  #      hibernate:
-  #        default_schema: auth
   datasource:
     url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=auth"
     username: postgres
     password: mysecretpassword
-#    hikari:
-#      schema: auth
+  liquibase:
+    database-change-log-lock-table: AUTH_DATABASECHANGELOG_LOCK
+    database-change-log-table: AUTH_DATABASECHANGELOG
+    default-schema: public
+    change-log: classpath:/db/changelog/db.changelog-master.xml

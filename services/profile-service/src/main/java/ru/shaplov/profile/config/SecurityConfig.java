@@ -42,7 +42,7 @@ public class SecurityConfig {
                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**")
                 .permitAll()
                 .requestMatchers("/internal/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().hasAnyAuthority("SCOPE_profiles")
                 .and()
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();

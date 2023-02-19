@@ -6,4 +6,5 @@ import ru.shaplov.orderservice.model.persistence.OrderEntity;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
+    boolean existsByIdAndProfileId(Long id, Long profileId);
 }

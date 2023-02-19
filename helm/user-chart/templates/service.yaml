@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "user-chart.fullname" . }}
+  name: {{ include "user-chart.fullname" . }}-profiles
   labels:
     {{- include "user-chart.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.services.profiles.type }}
   ports:
     - protocol: TCP
-      port: {{ .Values.service.port }}
-      targetPort: {{ .Values.port }}
-      name: web
+      port: {{ .Values.services.profiles.port }}
+      targetPort: {{ .Values.port.profiles }}
+      name: web-profiles
   selector:
     {{- include "user-chart.selectorLabels" . | nindent 4 }}
 ---
@@ -21,11 +21,27 @@ metadata:
   labels:
     {{- include "user-chart.labels" . | nindent 4 }}-auth
 spec:
-  type: {{ .Values.authService.type }}
+  type: {{ .Values.services.auth.type }}
   ports:
     - protocol: TCP
-      port: {{ .Values.authService.port }}
-      targetPort: {{ .Values.portAuth }}
+      port: {{ .Values.services.auth.port }}
+      targetPort: {{ .Values.port.auth }}
       name: web-auth
+  selector:
+    {{- include "user-chart.selectorLabels" . | nindent 4 }}-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "user-chart.fullname" . }}-orders
+  labels:
+    {{- include "user-chart.labels" . | nindent 4 }}-orders
+spec:
+  type: {{ .Values.services.orders.type }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.orders.port }}
+      targetPort: {{ .Values.port.orders }}
+      name: web-orders
   selector:
     {{- include "user-chart.selectorLabels" . | nindent 4 }}-auth
