@@ -13,7 +13,7 @@ images:
   orders:
     repository: shaplovdv/order-service
     pullPolicy: IfNotPresent
-    tag: "1.0"
+    tag: "1.6"
 
 postgresql:
   enabled: true
@@ -52,7 +52,7 @@ services:
 ingress:
   className: nginx
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/auth-response-headers: Authorization
     nginx.ingress.kubernetes.io/server-snippet: |
       location ~* "^/internal.*" {
@@ -62,11 +62,11 @@ ingress:
   hosts:
     - host: arch.homework
       paths:
-        - path: /(.*)
+        - path: /profile(/|$)(.*)
           pathType: Prefix
           serviceSuffix: "-profiles"
           svcPort: 80
-        - path: /(.*)
+        - path: /orders(/|$)(.*)
           pathType: Prefix
           serviceSuffix: "-orders"
           svcPort: 82

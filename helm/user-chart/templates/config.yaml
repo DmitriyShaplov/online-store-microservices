@@ -32,4 +32,4 @@ metadata:
 data:
   SERVER_PORT: {{ .Values.port.auth | quote }}
   SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=auth"
-  CLIENTS_PROFILE_URL: "http://{{ include "user-chart.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.profiles.port }}"
+  CLIENTS_PROFILE_URL: "http://{{ include "user-chart.fullname" . }}-profiles.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.profiles.port }}"

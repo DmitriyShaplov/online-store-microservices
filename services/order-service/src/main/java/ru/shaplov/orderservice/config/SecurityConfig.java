@@ -27,6 +27,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URL;
 import java.util.Base64;
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
@@ -52,8 +53,8 @@ public class SecurityConfig {
                 .requestMatchers("/orders/{id}")
                 .access(((authentication, request) ->
                         new AuthorizationDecision(orderRepository.existsByIdAndProfileId(
-                                Long.parseLong(request.getVariables().get("id")),
-                                ((JwtAuthenticationToken) authentication).getToken().getClaim("profile_id")))))
+                                UUID.fromString(request.getVariables().get("id")),
+                                ((JwtAuthenticationToken) authentication.get()).getToken().getClaim("profile_id")))))
                 .anyRequest().hasAnyAuthority("SCOPE_orders")
                 .and()
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);

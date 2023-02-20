@@ -1,5 +1,4 @@
 {{- $fullName := include "user-chart.fullname" . -}}
-{{- $svcPort := .Values.services.profiles.port -}}
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -42,8 +41,8 @@ spec:
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
-        {{- range .paths }}
         paths:
+        {{- range .paths }}
           - path: {{ .path }}
             pathType: {{ .pathType }}
             backend:

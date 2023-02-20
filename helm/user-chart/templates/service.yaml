@@ -44,4 +44,4 @@ spec:
       targetPort: {{ .Values.port.orders }}
       name: web-orders
   selector:
-    {{- include "user-chart.selectorLabels" . | nindent 4 }}-auth
+    {{- include "user-chart.selectorLabels" . | nindent 4 }}-orders

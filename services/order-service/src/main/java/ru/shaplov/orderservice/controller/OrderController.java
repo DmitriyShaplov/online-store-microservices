@@ -40,9 +40,9 @@ public class OrderController {
         return orderService.process(id, paymentMethod, orderHash);
     }
 
-    @DeleteMapping("/{id}")
-    public void cancel(@PathVariable UUID id, @RequestParam int orderHash) {
-        orderService.cancel(id, orderHash);
+    @PostMapping("/{id}/cancel")
+    public Order cancel(@PathVariable UUID id, @RequestParam int orderHash) {
+        return orderService.cancel(id, orderHash);
     }
 
 }

@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-alpine AS build
 WORKDIR /workspace/app/order-service
 ADD build/libs build/libs/
-RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/order-service-1.0.jar)
+RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/order-service-1.6.jar)
 
 FROM openjdk:17-jdk-alpine
 ARG DEPENDENCY=/workspace/app/order-service/build/dependency

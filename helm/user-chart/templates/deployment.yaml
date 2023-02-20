@@ -40,10 +40,10 @@ spec:
             httpGet:
               port: {{ .Values.port.profiles }}
               path: /actuator/health
-            initialDelaySeconds: 100
-            periodSeconds: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
             timeoutSeconds: 3
-            failureThreshold: 10
+            failureThreshold: 5
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -87,10 +87,10 @@ spec:
             httpGet:
               port: {{ .Values.port.auth }}
               path: /actuator/health
-            initialDelaySeconds: 100
-            periodSeconds: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
             timeoutSeconds: 3
-            failureThreshold: 10
+            failureThreshold: 5
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -129,12 +129,12 @@ spec:
                   optional: false
           envFrom:
             - configMapRef:
-                name: "{{ include "user-chart.fullname" . }}-auth"
+                name: "{{ include "user-chart.fullname" . }}-orders"
           livenessProbe:
             httpGet:
               port: {{ .Values.port.orders }}
               path: /actuator/health
-            initialDelaySeconds: 100
-            periodSeconds: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
             timeoutSeconds: 3
-            failureThreshold: 10
+            failureThreshold: 5
