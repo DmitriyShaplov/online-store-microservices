@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import ru.shaplov.authservice.client.ProfileClient;
 import ru.shaplov.authservice.client.model.Profile;
 import ru.shaplov.authservice.model.RegistrationRequest;
@@ -33,25 +32,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public Profile register(RegistrationRequest request) {
+        Profile registeredProfile = createProfile(request);
         UserEntity userEntity = new UserEntity()
                 .setLogin(request.getLogin())
-                .setPassword(passwordEncoder.encode(request.getPassword()));
-        userEntity = userRepository.save(userEntity);
-
-        Profile registeredProfile = null;
-        try {
-            registeredProfile = createProfile(request);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            userRepository.delete(userEntity);
-            log.info("registration cancelled");
-            throw e;
-        }
-        if (registeredProfile != null) {
-            Assert.notNull(registeredProfile.getId(), "profile id is null!");
-            userRepository.save(userEntity.setProfileId(registeredProfile.getId()));
-            log.info("user updated with profile id");
-        }
+                .setPassword(passwordEncoder.encode(request.getPassword()))
+                .setProfileId(registeredProfile.getId());
+        userRepository.save(userEntity);
+        log.info("User registered {}", registeredProfile);
         return registeredProfile;
     }
 
