@@ -1,7 +1,6 @@
 plugins {
     id 'java-library'
     id 'io.spring.dependency-management' version '1.1.0'
-    id 'maven-publish'
 }
 
 group = 'ru.shaplov'
@@ -20,7 +19,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:3.0.2"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.0.4"
     }
 }
 
@@ -47,8 +46,4 @@ dependencies {
     testCompileOnly 'org.springframework.boot:spring-boot-starter-test'
     testCompileOnly 'org.springframework.security:spring-security-test'
     testCompileOnly 'com.h2database:h2'
-}
-
-java {
-    withSourcesJar()
 }

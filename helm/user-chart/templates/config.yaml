@@ -4,7 +4,7 @@ metadata:
   name: {{ include "user-chart.fullname" . }}-profiles
 data:
   SERVER_PORT: {{ .Values.port.profiles | quote }}
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=profiles"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_accounts"
   CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
 ---
 apiVersion: v1
@@ -13,7 +13,7 @@ metadata:
   name: {{ include "user-chart.fullname" . }}-orders
 data:
   SERVER_PORT: {{ .Values.port.orders | quote }}
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=app_orders"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_orders"
   CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
 ---
 apiVersion: v1

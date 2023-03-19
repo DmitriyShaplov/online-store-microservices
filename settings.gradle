@@ -1,4 +1,7 @@
 include 'commons'
 include 'services:order-service'
-include 'services:profile-service'
+include 'services:account-service'
 include 'services:auth-service'
+include 'services:warehouse-service'
+include 'services:delivery-service'
+include 'services:notification-service'

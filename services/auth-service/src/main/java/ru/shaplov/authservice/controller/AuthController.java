@@ -17,6 +17,7 @@ import ru.shaplov.authservice.service.AuthService;
 
 @RestController
 @Slf4j
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -25,7 +26,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @RequestMapping("/auth/**")
+    @RequestMapping("/authorize")
     public void enrichRequest(HttpServletRequest request, HttpServletResponse response) {
         log.info("INCOMING REQUEST, URL: {}", request.getRequestURI());
         HttpSession session = request.getSession(false);

@@ -73,8 +73,13 @@ public class AuthServiceImpl implements AuthService {
         // Create a JWTClaimsSet with the desired claims
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(userEntity.getLogin())
-                .claim("profile_id", userEntity.getProfileId())
-                .claim("scope", "profiles orders")
+                .claim("user_id", userEntity.getId())
+                .claim("username", userEntity.getUsername())
+                .claim("firstName", userEntity.getFirstName())
+                .claim("lastName", userEntity.getLastName())
+                .claim("email", userEntity.getEmail())
+                .claim("phone", userEntity.getPhone())
+                .claim("scope", "user")
                 .expirationTime(new Date(System.currentTimeMillis() + 1800 * 1000))
                 .build();
 

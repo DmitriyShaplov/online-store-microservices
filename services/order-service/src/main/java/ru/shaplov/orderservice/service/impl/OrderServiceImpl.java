@@ -39,25 +39,14 @@ public class OrderServiceImpl implements OrderService {
         if (persistentService.exists(order.getId())) {
             throw new ResponseCodeException(String.format("Order %s already exists", order.getId()), HttpStatus.CONFLICT);
         }
-        order.setOrderStatus(OrderStatus.DRAFT);
-        //устанавливаем текущую цену продукта
-        order.setCurrentItemPrice(productService.getProductPrice(order.getProductId()));
+        order.setOrderStatus(OrderStatus.CREATED);
         return persistentService.saveOrUpdate(order);
     }
 
     @Override
     public Order update(UUID id, Order order) {
         Order savedOrder = persistentService.find(id);
-
-        checkIdempotency(order.getOrderHash(), savedOrder);
-        if (savedOrder.getOrderStatus().getState() > OrderStatus.DRAFT.getState()) {
-            throw new ResponseCodeException(String.format("Cannot update order in status: %s", savedOrder.getOrderStatus()),
-                    HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
         order.setId(id);
-        //устанавливаем текущую цену продукта
-        order.setCurrentItemPrice(productService.getProductPrice(order.getProductId()));
         modelMapper.map(order, savedOrder);
         return persistentService.saveOrUpdate(savedOrder);
     }
@@ -68,8 +57,6 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = persistentService.find(id);
 
         checkIdempotency(orderHash, savedOrder);
-        savedOrder.setPaymentMethod(paymentMethod);
-        savedOrder.setOrderStatus(OrderStatus.PROCESSED);
         //todo add paymentInformation for billing service
         //todo add information for delivery service
         return persistentService.saveOrUpdate(savedOrder);
@@ -80,15 +67,6 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = persistentService.find(id);
 
         checkIdempotency(orderHash, savedOrder);
-        if (savedOrder.getOrderStatus().getState() > OrderStatus.PROCESSED.getState()) {
-            throw new ResponseCodeException(String.format("Cannot delete order in status: %s", savedOrder.getOrderStatus()),
-                    HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        //todo cancel delivery service
-        if (savedOrder.getOrderStatus() == OrderStatus.PROCESSED) {
-            //todo payback in billing service
-        }
         savedOrder.setOrderStatus(OrderStatus.CANCELLED);
 
         return persistentService.saveOrUpdate(savedOrder);

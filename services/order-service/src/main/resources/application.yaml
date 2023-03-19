@@ -1,6 +1,3 @@
-server:
-  port: 8082
-
 management:
   metrics:
     distribution:
@@ -22,10 +19,12 @@ management:
 
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=app_orders"
+    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=os_orders"
     username: postgres
     password: mysecretpassword
-
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true
   jpa:
     open-in-view: true
     hibernate:
@@ -35,6 +34,12 @@ spring:
         format_sql: true
         highlight_sql: true
         generate_statistics: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+        default_schema: os_orders
 
   security:
     oauth2:
@@ -49,7 +54,7 @@ spring:
 
 clients:
   auth:
-    url: http://localhost:8081
+    url: ${CLIENTS_AUTH_URL}
 
 logging:
   level:

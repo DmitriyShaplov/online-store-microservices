@@ -1,0 +1,59 @@
+management:
+  metrics:
+    distribution:
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99, 1.00
+      percentiles-histogram:
+        'http.server.requests': true
+
+  endpoints:
+    web:
+      exposure:
+        include: "info,health,prometheus,refresh"
+  info:
+    git:
+      mode: full
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=os_warehouse"
+    username: postgres
+    password: mysecretpassword
+    hikari:
+      data-source-properties:
+        reWriteBatchedInserts: true
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        generate_statistics: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${clients.auth.url}/jwks
+  liquibase:
+    database-change-log-lock-table: WAREHOUSE_DATABASECHANGELOG_LOCK
+    database-change-log-table: WAREHOUSE_DATABASECHANGELOG
+    default-schema: public
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+logging:
+  level:
+    root: info
+    'org.springframework.web.filter.CommonsRequestLoggingFilter': DEBUG
+    'org.hibernate.type.descriptor.sql.BasicBinder': trace
+    'org.hibernate.SQL': debug

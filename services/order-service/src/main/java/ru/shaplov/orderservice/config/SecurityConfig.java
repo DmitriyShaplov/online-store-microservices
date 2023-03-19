@@ -49,13 +49,13 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**")
                 .permitAll()
-                .requestMatchers("/internal/**").permitAll()
-                .requestMatchers("/orders/{id}")
+                .requestMatchers("/api/v1/internal/**").permitAll()
+                .requestMatchers("/api/v1/orders/{id}")
                 .access(((authentication, request) ->
-                        new AuthorizationDecision(orderRepository.existsByIdAndProfileId(
+                        new AuthorizationDecision(orderRepository.existsByIdAndUserId(
                                 UUID.fromString(request.getVariables().get("id")),
-                                ((JwtAuthenticationToken) authentication.get()).getToken().getClaim("profile_id")))))
-                .anyRequest().hasAnyAuthority("SCOPE_orders")
+                                ((JwtAuthenticationToken) authentication.get()).getToken().getClaim("user_id")))))
+                .anyRequest().hasAnyAuthority("SCOPE_user")
                 .and()
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();

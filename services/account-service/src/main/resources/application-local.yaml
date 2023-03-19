@@ -1,0 +1,6 @@
+server:
+  port: 8083
+
+clients:
+  auth:
+    url: http://localhost:8081

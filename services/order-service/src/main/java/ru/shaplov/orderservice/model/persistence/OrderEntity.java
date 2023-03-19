@@ -7,9 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import ru.shaplov.orderservice.model.OrderStatus;
-import ru.shaplov.orderservice.model.PaymentMethod;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,18 +17,15 @@ import java.util.UUID;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "orders", schema = "app_orders", catalog = "postgres")
+@Table(name = "orders", schema = "os_orders", catalog = "postgres")
 public class OrderEntity {
 
     @Id
     @Column(name = "id")
     private UUID id;
 
-    @Version
-    private int version;
-
-    @Column(name = "profile_id", updatable = false)
-    private Long profileId;
+    @Column(name = "user_id", updatable = false)
+    private Long userId;
 
     @Column(name = "create_date", updatable = false)
     private OffsetDateTime createDate;
@@ -38,20 +33,11 @@ public class OrderEntity {
     @Column(name = "update_date")
     private OffsetDateTime updateDate;
 
+    @Column(name = "delivery_hour")
+    private Integer deliveryHour;
+
     @Column(name = "shipping_address")
     private String shippingAddress;
-
-    @Column(name = "product_id")
-    private UUID productId;
-
-    private Integer quantity;
-
-    @Column(name = "current_item_price")
-    private BigDecimal currentItemPrice;
-
-    @Column(name = "payment_method")
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
 
     @Column(name = "order_status")
     @Enumerated(EnumType.STRING)

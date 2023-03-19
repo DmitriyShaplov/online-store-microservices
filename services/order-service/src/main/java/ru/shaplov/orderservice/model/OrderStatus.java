@@ -3,11 +3,13 @@ package ru.shaplov.orderservice.model;
 import lombok.Getter;
 
 public enum OrderStatus {
-    DRAFT(0),
-    PROCESSED(1),
-    SHIPPED(2),
-    DELIVERED(3),
-    CANCELLED(4);
+    CREATED(1),
+    RESERVED(2),
+    PAYED(3),
+    IN_DELIVERY(4),
+    FINISHED(5),
+
+    CANCELLED(0);
 
     @Getter
     private final int state;

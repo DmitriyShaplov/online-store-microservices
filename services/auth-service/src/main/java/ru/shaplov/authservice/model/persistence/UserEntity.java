@@ -1,7 +1,10 @@
 package ru.shaplov.authservice.model.persistence;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import java.time.OffsetDateTime;
@@ -19,12 +22,17 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "profile_id")
-    private Long profileId;
-
     private String login;
 
     private String password;
+
+    private String username;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    private String email;
+    private String phone;
 
     @Column(name = "reg_date", insertable = false, updatable = false)
     private OffsetDateTime regDate;
