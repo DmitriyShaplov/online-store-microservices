@@ -1,9 +1,7 @@
 package ru.shaplov.orderservice.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 import ru.shaplov.common.util.SecurityUtil;
 import ru.shaplov.orderservice.model.CartItem;
 import ru.shaplov.orderservice.service.CartItemService;
@@ -20,7 +18,7 @@ public class CartController {
     }
 
     @PatchMapping("/api/v1/cart")
-    public CartItem addCartItem(@RequestBody CartItem cartItem) {
+    public CartItem addCartItem(@RequestBody @Valid CartItem cartItem) {
         cartItem.setUserId(SecurityUtil.getCurrentUserId());
         return cartItemService.createOrUpdate(cartItem);
     }
@@ -28,5 +26,10 @@ public class CartController {
     @GetMapping("/api/v1/cart")
     public List<CartItem> getCartItems() {
         return cartItemService.getList(SecurityUtil.getCurrentUserId());
+    }
+
+    @DeleteMapping("/api/v1/cart")
+    public void clearCart() {
+        cartItemService.clearCart(SecurityUtil.getCurrentUserId());
     }
 }

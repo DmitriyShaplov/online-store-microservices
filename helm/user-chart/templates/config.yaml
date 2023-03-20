@@ -1,12 +1,15 @@
+{{/*  billing*/}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "user-chart.fullname" . }}-profiles
+  name: {{ include "user-chart.fullname" . }}-billing
 data:
-  SERVER_PORT: {{ .Values.port.profiles | quote }}
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_accounts"
+  SERVER_PORT: {{ .Values.port.billing | quote }}
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_billing"
   CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "debezium-cluster-kafka-bootstrap.{{ .Release.Namespace }}.svc.cluster.local:9092"
 ---
+{{/*  orders*/}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,6 +18,52 @@ data:
   SERVER_PORT: {{ .Values.port.orders | quote }}
   SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_orders"
   CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
+  CLIENTS_PRODUCTS_URL: "http://{{ include "user-chart.fullname" . }}-products.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.products.port }}"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "debezium-cluster-kafka-bootstrap.{{ .Release.Namespace }}.svc.cluster.local:9092"
+---
+{{/*  products*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "user-chart.fullname" . }}-products
+data:
+  SERVER_PORT: {{ .Values.port.products | quote }}
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_products"
+  CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "debezium-cluster-kafka-bootstrap.{{ .Release.Namespace }}.svc.cluster.local:9092"
+---
+{{/*  delivery*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "user-chart.fullname" . }}-delivery
+data:
+  SERVER_PORT: {{ .Values.port.delivery | quote }}
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_delivery"
+  CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "debezium-cluster-kafka-bootstrap.{{ .Release.Namespace }}.svc.cluster.local:9092"
+---
+{{/*  notification*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "user-chart.fullname" . }}-notification
+data:
+  SERVER_PORT: {{ .Values.port.notification | quote }}
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_notification"
+  CLIENTS_AUTH_URL: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "debezium-cluster-kafka-bootstrap.{{ .Release.Namespace }}.svc.cluster.local:9092"
+---
+{{/*auth*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "user-chart.fullname" . }}-auth"
+data:
+  SERVER_PORT: {{ .Values.port.auth | quote }}
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=os_auth"
+  LOGGING_LEVEL_ROOT: "info"
+  LOGGING_LEVEL_RU: "debug"
 ---
 apiVersion: v1
 kind: Secret
@@ -28,8 +77,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ include "user-chart.fullname" . }}-auth"
+  name: debezium-config
 data:
-  SERVER_PORT: {{ .Values.port.auth | quote }}
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ include "postgresql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:5432/postgres?currentSchema=auth"
-  CLIENTS_PROFILE_URL: "http://{{ include "user-chart.fullname" . }}-profiles.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.profiles.port }}"
+  connector.json: |-
+    {{- .Values.debezium.connector.config  | toPrettyJson | nindent 4 }}

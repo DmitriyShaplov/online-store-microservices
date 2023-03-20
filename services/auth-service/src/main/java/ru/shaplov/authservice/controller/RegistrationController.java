@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.shaplov.authservice.client.model.User;
 import ru.shaplov.authservice.model.RegistrationRequest;
+import ru.shaplov.authservice.model.User;
 import ru.shaplov.authservice.service.RegistrationService;
 
 @RestController

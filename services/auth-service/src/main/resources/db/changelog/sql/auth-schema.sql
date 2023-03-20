@@ -6,7 +6,6 @@ create schema os_auth;
 create table os_auth.users
 (
     id         bigserial primary key,
-    account_id bigint unique             null,
     login      varchar(256) unique       not null,
     password   varchar(256)              not null,
     username   varchar(256)              not null,

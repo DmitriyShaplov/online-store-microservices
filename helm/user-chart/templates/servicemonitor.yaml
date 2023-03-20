@@ -15,9 +15,21 @@ spec:
       {{- include "user-chart.selectorLabels" . | nindent 6 }}
   endpoints:
     - interval: 5s
-      port: web-profiles
+      port: web-billing
       path: /actuator/prometheus
     - interval: 5s
       port: web-orders
+      path: /actuator/prometheus
+    - interval: 5s
+      port: web-products
+      path: /actuator/prometheus
+    - interval: 5s
+      port: web-delivery
+      path: /actuator/prometheus
+    - interval: 5s
+      port: web-notification
+      path: /actuator/prometheus
+    - interval: 5s
+      port: web-auth
       path: /actuator/prometheus
 {{- end }}

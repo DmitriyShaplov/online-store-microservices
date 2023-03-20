@@ -8,5 +8,7 @@ public interface CartItemService {
 
     CartItem createOrUpdate(CartItem cartItem);
 
-    List<CartItem> getList(Long accountId);
+    List<CartItem> getList(Long userId);
+
+    void clearCart(Long userId);
 }

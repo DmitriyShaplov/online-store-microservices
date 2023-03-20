@@ -11,6 +11,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ru.shaplov.authservice.model.persistence.UserEntity;
 import ru.shaplov.authservice.service.JwtService;
 
 import java.util.Date;
@@ -36,12 +37,30 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @SneakyThrows
-    @Override
-    public JWT buildJwt(JWTClaimsSet claimsSet) {
+    private JWT buildJwt(JWTClaimsSet claimsSet) {
         // Create a SignedJWT with the JWTClaimsSet and the OctetKeyPair
         SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES256).build(), claimsSet);
         signedJWT.sign(jwsSigner);
         return signedJWT;
+    }
+
+    @Override
+    public JWT buildJwt(UserEntity userEntity) {
+
+        // Create a JWTClaimsSet with the desired claims
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(userEntity.getLogin())
+                .claim("user_id", userEntity.getId())
+                .claim("username", userEntity.getUsername())
+                .claim("firstName", userEntity.getFirstName())
+                .claim("lastName", userEntity.getLastName())
+                .claim("email", userEntity.getEmail())
+                .claim("phone", userEntity.getPhone())
+                .claim("scope", "user")
+                .expirationTime(new Date(System.currentTimeMillis() + 1800 * 1000))
+                .build();
+
+        return buildJwt(claimsSet);
     }
 
     private Date getExpDate() {

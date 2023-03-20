@@ -59,3 +59,17 @@ this (by the DNS naming spec).
 {{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-"
 -}}
 {{- end -}}
+
+{{- define "debezium.name" -}}
+{{- .Release.Name | trimPrefix "debezium-" -}}
+{{- end }}
+
+{{- define "debezium.selectorLabels" -}}
+app: {{ .Chart.Name }}
+connector: {{ include "debezium.name" . }}
+{{- end }}
+
+{{- define "debezium.labels" -}}
+{{ include "debezium.selectorLabels" . }}
+managed-by: {{ .Release.Service | lower }}
+{{- end }}

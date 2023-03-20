@@ -2,20 +2,35 @@
 replicaCount: 2
 
 images:
-  profiles:
-    repository: shaplovdv/profile-service
+  billing:
+    repository: shaplovdv/billing-service
     pullPolicy: IfNotPresent
-    tag: "1.3"
+    tag: "1.6"
   auth:
     repository: shaplovdv/auth-service
     pullPolicy: IfNotPresent
-    tag: "1.8"
+    tag: "1.10"
   orders:
     repository: shaplovdv/order-service
     pullPolicy: IfNotPresent
-    tag: "1.6"
+    tag: "1.8"
+  products:
+    repository: shaplovdv/product-service
+    pullPolicy: IfNotPresent
+    tag: "1.0"
+  delivery:
+    repository: shaplovdv/delivery-service
+    pullPolicy: IfNotPresent
+    tag: "1.1"
+  notification:
+    repository: shaplovdv/notification-service
+    pullPolicy: IfNotPresent
+    tag: "1.0"
 
 postgresql:
+  primary:
+    extendedConfiguration: |-
+      wal_level = logical
   enabled: true
   username: postgres
   auth:
@@ -31,23 +46,35 @@ postgresql:
         database: postgres
 
 port:
-  profiles: "8000"
-  auth: "8001"
-  orders: "8002"
+  billing: "8000"
+  auth: "8000"
+  orders: "8000"
+  products: "8000"
+  delivery: "8000"
+  notification: "8000"
 
 nameOverride: ""
 fullnameOverride: ""
 
 services:
-  profiles:
+  billing:
     type: NodePort
-    port: 80
+    port: 86
   auth:
     type: NodePort
     port: 81
   orders:
     type: NodePort
     port: 82
+  products:
+    type: NodePort
+    port: 83
+  delivery:
+    type: NodePort
+    port: 84
+  notification:
+    type: NodePort
+    port: 85
 
 ingress:
   className: nginx
@@ -55,32 +82,70 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/auth-response-headers: Authorization
     nginx.ingress.kubernetes.io/server-snippet: |
-      location ~* "^/internal.*" {
+      location ~* "^/api/v1/internal.*" {
           deny all;
           return 403;
         }
   hosts:
     - host: arch.homework
       paths:
-        - path: /profile(/|$)(.*)
+        - path: /api/v1/accounts
           pathType: Prefix
-          serviceSuffix: "-profiles"
-          svcPort: 80
-        - path: /orders(/|$)(.*)
+          serviceSuffix: "-billing"
+          svcPort: 86
+        - path: /api/v1/(orders|cart)
           pathType: Prefix
           serviceSuffix: "-orders"
           svcPort: 82
+        - path: /api/v1/notifications
+          pathType: Prefix
+          serviceSuffix: "-notification"
+          svcPort: 85
 
-ingressAuth:
+ingressNoAuth:
   className: nginx
   hosts:
     - host: arch.homework
       paths:
-        - path: /(register|login|logout)
+        - path: /api/v1/auth/(register|login|logout)
           pathType: Prefix
           serviceSuffix: "-auth"
           svcPort: 81
+        - path: /api/v1/products
+          pathType: Prefix
+          serviceSuffix: "-products"
+          svcPort: 83
+        - path: /api/v1/delivery
+          pathType: Prefix
+          serviceSuffix: "-delivery"
+          svcPort: 84
 
 metrics:
   serviceMonitor:
     enabled: true
+
+debezium:
+  image: debezium/connect:2.2
+  connector:
+    name: os-connector
+    config:
+      connector.class: io.debezium.connector.postgresql.PostgresConnector
+      tasks.max: 1
+      database.hostname: online-store-postgresql.online-store.svc.cluster.local
+      database.port: 5432
+      database.user: postgres
+      database.password: mysecretpassword
+      database.dbname: postgres
+      database.server.name: debezium
+      tombstones.on.delete: false
+      topic.prefix: online-store
+      plugin.name: pgoutput
+      schema.include.list: os_products,os_orders,os_billing,os_delivery
+      table.include.list: os_products.outbox,os_orders.outbox,os_billing.outbox,os_delivery.outbox
+      transforms.outbox.table.expand.json.payload: true
+      key.converter: org.apache.kafka.connect.storage.StringConverter
+      value.converter: org.apache.kafka.connect.json.JsonConverter
+      value.converter.schemas.enable: false
+      transforms.outbox.table.fields.additional.placement: type:header:type
+      transforms: outbox
+      transforms.outbox.type: io.debezium.transforms.outbox.EventRouter

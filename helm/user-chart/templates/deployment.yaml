@@ -1,53 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "user-chart.fullname" . }}-deployment
-  labels:
-   {{- include "user-chart.labels" . | nindent 4 }}
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      {{- include "user-chart.selectorLabels" . | nindent 6 }}
-  template:
-    metadata:
-      labels:
-        {{- include "user-chart.selectorLabels" . | nindent 8 }}
-    spec:
-      containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.images.profiles.repository }}:{{ .Values.images.profiles.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.images.profiles.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.port.profiles }}
-          env:
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "user-chart.fullname" . }}
-                  key: postgres-username
-                  optional: false
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "user-chart.fullname" . }}
-                  key: postgres-password
-                  optional: false
-          envFrom:
-            - configMapRef:
-                name: {{ include "user-chart.fullname" . }}-profiles
-          livenessProbe:
-            httpGet:
-              port: {{ .Values.port.profiles }}
-              path: /actuator/health
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 5
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: {{ include "user-chart.fullname" . }}-deployment-auth
   labels:
    {{- include "user-chart.labels" . | nindent 4 }}-auth
@@ -133,6 +86,194 @@ spec:
           livenessProbe:
             httpGet:
               port: {{ .Values.port.orders }}
+              path: /actuator/health
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "user-chart.fullname" . }}-deployment-billing
+  labels:
+   {{- include "user-chart.labels" . | nindent 4 }}-billing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "user-chart.selectorLabels" . | nindent 6 }}-billing
+  template:
+    metadata:
+      labels:
+        {{- include "user-chart.selectorLabels" . | nindent 8 }}-billing
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.images.billing.repository }}:{{ .Values.images.billing.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.orders.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port.billing }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: "{{ include "user-chart.fullname" . }}-billing"
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.port.billing }}
+              path: /actuator/health
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "user-chart.fullname" . }}-deployment-products
+  labels:
+   {{- include "user-chart.labels" . | nindent 4 }}-products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "user-chart.selectorLabels" . | nindent 6 }}-products
+  template:
+    metadata:
+      labels:
+        {{- include "user-chart.selectorLabels" . | nindent 8 }}-products
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.images.products.repository }}:{{ .Values.images.products.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.orders.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port.products }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: "{{ include "user-chart.fullname" . }}-products"
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.port.products }}
+              path: /actuator/health
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "user-chart.fullname" . }}-deployment-delivery
+  labels:
+   {{- include "user-chart.labels" . | nindent 4 }}-delivery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "user-chart.selectorLabels" . | nindent 6 }}-delivery
+  template:
+    metadata:
+      labels:
+        {{- include "user-chart.selectorLabels" . | nindent 8 }}-delivery
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.images.delivery.repository }}:{{ .Values.images.delivery.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.orders.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port.delivery }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: "{{ include "user-chart.fullname" . }}-delivery"
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.port.delivery }}
+              path: /actuator/health
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "user-chart.fullname" . }}-deployment-notification
+  labels:
+   {{- include "user-chart.labels" . | nindent 4 }}-notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "user-chart.selectorLabels" . | nindent 6 }}-notification
+  template:
+    metadata:
+      labels:
+        {{- include "user-chart.selectorLabels" . | nindent 8 }}-notification
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.images.notification.repository }}:{{ .Values.images.notification.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.orders.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port.notification }}
+          env:
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-username
+                  optional: false
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "user-chart.fullname" . }}
+                  key: postgres-password
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: "{{ include "user-chart.fullname" . }}-notification"
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.port.notification }}
               path: /actuator/health
             initialDelaySeconds: 30
             periodSeconds: 10

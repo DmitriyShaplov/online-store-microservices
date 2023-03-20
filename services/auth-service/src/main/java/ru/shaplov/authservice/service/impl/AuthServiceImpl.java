@@ -1,7 +1,6 @@
 package ru.shaplov.authservice.service.impl;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "password doesn't match");
         }
 
-        JWT jwt = buildJWT(userEntity);
+        JWT jwt = jwtService.buildJwt(userEntity);
 
         tokenStore.storeToken(sessionId, jwt);
     }
@@ -66,23 +65,5 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String sessionId) {
         tokenStore.removeToken(sessionId);
         log.info("session {} invalidated", sessionId);
-    }
-
-    private JWT buildJWT(UserEntity userEntity) {
-
-        // Create a JWTClaimsSet with the desired claims
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(userEntity.getLogin())
-                .claim("user_id", userEntity.getId())
-                .claim("username", userEntity.getUsername())
-                .claim("firstName", userEntity.getFirstName())
-                .claim("lastName", userEntity.getLastName())
-                .claim("email", userEntity.getEmail())
-                .claim("phone", userEntity.getPhone())
-                .claim("scope", "user")
-                .expirationTime(new Date(System.currentTimeMillis() + 1800 * 1000))
-                .build();
-
-        return jwtService.buildJwt(claimsSet);
     }
 }

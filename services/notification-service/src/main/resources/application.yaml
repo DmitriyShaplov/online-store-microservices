@@ -18,8 +18,13 @@ management:
       show-details: always
 
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notificationGroup
+      auto-offset-reset: earliest
   datasource:
-    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=os_notification"
+    url: "jdbc:postgresql://localhost:5432/postgres?currentSchema=${spring.liquibase.parameters.schema}"
     username: postgres
     password: mysecretpassword
     hikari:
@@ -39,6 +44,7 @@ spring:
         jdbc:
           batch_size: 50
           batch_versioned_data: true
+        default_schema: ${spring.liquibase.parameters.schema}
 
   security:
     oauth2:
@@ -50,10 +56,12 @@ spring:
     database-change-log-table: NOTIFICATION_DATABASECHANGELOG
     default-schema: public
     change-log: classpath:/db/changelog/db.changelog-master.xml
-
+    parameters:
+      schema: os_notification
 logging:
   level:
     root: info
     'org.springframework.web.filter.CommonsRequestLoggingFilter': DEBUG
     'org.hibernate.type.descriptor.sql.BasicBinder': trace
     'org.hibernate.SQL': debug
+    'org.springframework.jdbc.core.JdbcTemplate': debug

@@ -1,6 +1,2 @@
 server:
   port: 8081
-
-clients:
-  accounts:
-    url: http://localhost:8083

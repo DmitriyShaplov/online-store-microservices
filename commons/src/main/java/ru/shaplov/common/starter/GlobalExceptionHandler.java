@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseCodeException.class)
     ResponseEntity<ErrorInfo> handleResponseCode(ResponseCodeException ex) {
-        log.info(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
         return ResponseEntity.status(ex.getCode())
                 .body(new ErrorInfo(ex.getCode().value(), ex.getMessage()));
     }

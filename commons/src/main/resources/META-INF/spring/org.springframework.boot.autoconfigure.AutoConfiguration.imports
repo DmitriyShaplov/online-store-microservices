@@ -1,2 +1,6 @@
 ru.shaplov.common.starter.AppConfig
 ru.shaplov.common.starter.OpenApiUiConfig
+ru.shaplov.common.starter.FeignStarter
+ru.shaplov.common.starter.SecurityStarter
+ru.shaplov.common.outbox.OutboxStarter
+ru.shaplov.common.consumer.KafkaConsumerStarter

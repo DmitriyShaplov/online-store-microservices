@@ -15,4 +15,12 @@ public class SecurityUtil {
         }
         throw new IllegalStateException("user is not authenticated");
     }
+
+    public Object getAttribute(String attr) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        if (context != null && context.getAuthentication() instanceof JwtAuthenticationToken token) {
+            return token.getToken().getClaim(attr);
+        }
+        throw new IllegalStateException("user is not authenticated");
+    }
 }

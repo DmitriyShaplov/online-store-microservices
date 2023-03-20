@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "debezium.name" . }}
+  labels:
+    {{- include "debezium.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "debezium.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9071"
+      labels:
+        {{- include "debezium.selectorLabels" . | nindent 8 }}
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: debezium-config
+      containers:
+        - name: connector
+          image: {{ .Values.debezium.image }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/debezium/connector.json
+              subPath: connector.json
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: debezium-cluster-kafka-bootstrap.{{ .Release.Namespace }}.svc.cluster.local:9092
+            - name: GROUP_ID
+              value: debeziumGroup
+            - name: CONFIG_STORAGE_TOPIC
+              value: connect_configs
+            - name: OFFSET_STORAGE_TOPIC
+              value: connect_offsets
+            - name: STATUS_STORAGE_TOPIC
+              value: connect_statuses
+{{/*          livenessProbe:*/}}
+{{/*            exec:*/}}
+{{/*              command: ['/bin/sh', '-c', '! curl 127.0.0.1:8083/connectors/{{ .Values.debezium.connector.name }}/status 2>/dev/null | grep -q  "state":"FAILED" && exit 1 || exit 0']*/}}
+{{/*            initialDelaySeconds: 90*/}}
+{{/*            periodSeconds: 3*/}}
+          lifecycle:
+            postStart:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 60; curl --request PUT --header "Accept:application/json" --header "Content-Type:application/json" "http://127.0.0.1:8083/connectors/{{ .Values.debezium.connector.name }}/config" --data "@/etc/debezium/connector.json"']

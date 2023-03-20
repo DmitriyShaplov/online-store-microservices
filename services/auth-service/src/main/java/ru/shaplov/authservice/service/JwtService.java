@@ -1,11 +1,11 @@
 package ru.shaplov.authservice.service;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
+import ru.shaplov.authservice.model.persistence.UserEntity;
 
 public interface JwtService {
 
     JWT refreshExpiration(JWT jwt);
 
-    JWT buildJwt(JWTClaimsSet claimsSet);
+    JWT buildJwt(UserEntity userEntity);
 }

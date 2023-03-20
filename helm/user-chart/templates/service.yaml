@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "user-chart.fullname" . }}-profiles
+  name: {{ include "user-chart.fullname" . }}-billing
   labels:
-    {{- include "user-chart.labels" . | nindent 4 }}
+    {{- include "user-chart.labels" . | nindent 4 }}-billing
 spec:
-  type: {{ .Values.services.profiles.type }}
+  type: {{ .Values.services.billing.type }}
   ports:
     - protocol: TCP
-      port: {{ .Values.services.profiles.port }}
-      targetPort: {{ .Values.port.profiles }}
-      name: web-profiles
+      port: {{ .Values.services.billing.port }}
+      targetPort: {{ .Values.port.billing }}
+      name: web-billing
   selector:
-    {{- include "user-chart.selectorLabels" . | nindent 4 }}
+    {{- include "user-chart.selectorLabels" . | nindent 4 }}-billing
 ---
 apiVersion: v1
 kind: Service
@@ -45,3 +45,51 @@ spec:
       name: web-orders
   selector:
     {{- include "user-chart.selectorLabels" . | nindent 4 }}-orders
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "user-chart.fullname" . }}-products
+  labels:
+    {{- include "user-chart.labels" . | nindent 4 }}-products
+spec:
+  type: {{ .Values.services.products.type }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.products.port }}
+      targetPort: {{ .Values.port.orders }}
+      name: web-products
+  selector:
+    {{- include "user-chart.selectorLabels" . | nindent 4 }}-products
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "user-chart.fullname" . }}-delivery
+  labels:
+    {{- include "user-chart.labels" . | nindent 4 }}-delivery
+spec:
+  type: {{ .Values.services.delivery.type }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.delivery.port }}
+      targetPort: {{ .Values.port.delivery }}
+      name: web-delivery
+  selector:
+    {{- include "user-chart.selectorLabels" . | nindent 4 }}-delivery
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "user-chart.fullname" . }}-notification
+  labels:
+    {{- include "user-chart.labels" . | nindent 4 }}-notification
+spec:
+  type: {{ .Values.services.notification.type }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.services.notification.port }}
+      targetPort: {{ .Values.port.delivery }}
+      name: web-notification
+  selector:
+    {{- include "user-chart.selectorLabels" . | nindent 4 }}-notification

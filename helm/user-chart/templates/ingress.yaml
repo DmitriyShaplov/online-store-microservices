@@ -3,19 +3,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-auth
-  {{- with .Values.ingressAuth.annotations }}
+  name: {{ $fullName }}-noauth
+  {{- with .Values.ingressNoAuth.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingressAuth.className }}
+  ingressClassName: {{ .Values.ingressNoAuth.className }}
   rules:
-    {{- range .Values.ingressAuth.hosts }}
+    {{- range .Values.ingressNoAuth.hosts }}
     - host: {{ .host | quote }}
       http:
-        {{- range .paths }}
         paths:
+        {{- range .paths }}
           - path: {{ .path }}
             pathType: {{ .pathType }}
             backend:
@@ -34,7 +34,7 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-    nginx.ingress.kubernetes.io/auth-url: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}/auth"
+    nginx.ingress.kubernetes.io/auth-url: "http://{{ include "user-chart.fullname" . }}-auth.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.auth.port }}/api/v1/auth/authorize"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:

@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.shaplov.authservice.model.RegistrationRequest;
+import ru.shaplov.authservice.model.User;
 import ru.shaplov.authservice.model.persistence.UserEntity;
 import ru.shaplov.authservice.repository.UserRepository;
 import ru.shaplov.authservice.service.RegistrationService;
